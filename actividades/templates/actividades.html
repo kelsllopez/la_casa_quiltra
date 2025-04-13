@@ -1,0 +1,1120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/actividades.css' %}">
+{% endblock %}
+
+{% block title %}Actividades{% endblock %}
+
+{% block content %}
+<section class="eventos-tabs-section">
+  <div class="container mt-5">
+    <div class="titulo-actividades">
+      <div class="iconos-decorativos">
+        <i class="fas fa-paw icono icono-pata"></i>
+        <i class="fas fa-bone icono icono-hueso"></i>
+        <i class="fas fa-heart icono icono-corazon"></i>
+        <i class="fas fa-home icono icono-casa"></i>
+      </div>
+      <h2>Nuestras Actividades</h2>
+      <p>Conoce todo lo que hacemos por nuestros amigos peludos</p>
+    </div>
+    
+    <ul class="nav nav-tabs custom-tabs" id="eventosTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="eventos-tab" data-bs-toggle="tab" data-bs-target="#eventos" type="button" role="tab" aria-controls="eventos" aria-selected="true">
+          <i class="fas fa-calendar-alt"></i> Eventos
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="talleres-tab" data-bs-toggle="tab" data-bs-target="#talleres" type="button" role="tab" aria-controls="talleres" aria-selected="false">
+          <i class="fas fa-chalkboard-teacher"></i> Talleres
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="charlas-tab" data-bs-toggle="tab" data-bs-target="#charlas" type="button" role="tab" aria-controls="charlas" aria-selected="false">
+          <i class="fas fa-microphone-alt"></i> Charlas
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="conversatorios-tab" data-bs-toggle="tab" data-bs-target="#conversatorios" type="button" role="tab" aria-controls="conversatorios" aria-selected="false">
+          <i class="fas fa-comments"></i> Conversatorios
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="adopcion-tab" data-bs-toggle="tab" data-bs-target="#adopcion" type="button" role="tab" aria-controls="adopcion" aria-selected="false">
+          <i class="fas fa-home"></i> Jornadas de Adopción
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content custom-tab-content" id="eventosTabContent">
+
+      <!-- Eventos Tab -->
+      <div class="tab-pane fade show active" id="eventos" role="tabpanel" aria-labelledby="eventos-tab">
+        <div class="row">
+          {% for e in eventos %}
+            <div class="col-lg-3 col-md-6 mb-4">
+              <div class="conversatorio-card">
+                <div class="charla-image">
+                  {% if e.imagen %}
+                    <img src="{{ e.imagen.url }}" alt="{{ e.nombre }}" class="img-fluid rounded">
+                  {% else %}
+                    <img src="{% static 'image/icono.png' %}" alt="{{ e.nombre }}" class="img-fluid rounded">
+                  {% endif %}
+                  <div class="taller-badge">
+                    <div class="badge-content">
+                      {% if e.fecha %}
+                        <span class="badge-day">{{ e.fecha|date:"d" }}</span>
+                        <span class="badge-month">{{ e.fecha|date:"M" }}</span>
+                      {% else %}
+                        <span class="badge-day">--</span>
+                        <span class="badge-month">--</span>
+                      {% endif %}
+                    </div>
+                  </div>                   
+                </div>
+                <div class="conversatorio-content">
+                  <div class="conversatorio-footer">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventoModal{{ e.id }}">
+                      <span>Más información</span>
+                      <i class="fas fa-arrow-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-12">
+              <div class="empty-state text-center">
+                <div class="empty-icon">
+                  <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h3>No hay eventos próximos</h3>
+                <p>Estamos preparando nuevas actividades. ¡Vuelve pronto!</p>
+                <a href="#contacto" class="btn btn-primary">Sugerir un evento</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% if eventos.paginator.num_pages > 1 %}
+        <nav aria-label="Paginación de eventos">
+          <ul class="pagination justify-content-center">
+            {% if eventos.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1&tipo=eventos">&laquo; Primera</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ eventos.previous_page_number }}&tipo=eventos">Anterior</a>
+              </li>
+            {% endif %}
+        
+            <!-- Mostrar los números de página -->
+            {% for num in eventos.paginator.page_range %}
+              {% if num == eventos.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+              {% elif num > eventos.number|add:"-3" and num < eventos.number|add:"3" %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}&tipo=eventos">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+        
+            {% if eventos.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ eventos.next_page_number }}&tipo=eventos">Siguiente</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ eventos.paginator.num_pages }}&tipo=eventos">Última &raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+        
+        {% endif %}
+      </div>
+    
+      <!-- Talleres Tab -->
+      <div class="tab-pane fade" id="talleres" role="tabpanel" aria-labelledby="talleres-tab">
+        <div class="row">
+          {% for taller in talleres %}
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="conversatorio-card">
+              <div class="charla-image">
+                {% if taller.imagen %}
+                <img src="{{ taller.imagen.url }}" alt="{{ taller.nombre }}" class="img-fluid">
+                {% else %}
+                    <img src="{% static 'image/icono.png' %}" alt="{{ taller.nombre }}" class="img-fluid">
+                {% endif %}
+                <div class="taller-badge">
+                  <div class="badge-content">
+                    {% if taller.fecha %}
+                    <span class="badge-day">{{ taller.fecha|date:"d" }}</span>
+                    <span class="badge-month">{{ taller.fecha|date:"M" }}</span>
+                  {% else %}
+                    <span class="badge-day">--</span>
+                    <span class="badge-month">--</span>
+                  {% endif %}
+                  </div>
+                </div>                   
+              </div>
+              <div class="conversatorio-content">
+                <div class="conversatorio-footer">
+                  <button class="btn btn-primary taller-btn" data-bs-toggle="modal" data-bs-target="#tallerModal{{ taller.id }}">
+                    <span>Más información</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+            <div class="col-12">
+              <div class="empty-state text-center">
+                <div class="empty-icon">
+                  <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h3>No hay talleres programados</h3>
+                <p>Estamos preparando nuevos talleres educativos. ¡Vuelve pronto!</p>
+                <a href="#contacto" class="btn btn-primary mt-3">
+                  <i class="fas fa-bell"></i> Notificarme de nuevos talleres
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div> 
+        {% if talleres.paginator.num_pages > 1 %}
+        <nav aria-label="Paginación de talleres">
+          <ul class="pagination justify-content-center">
+            {% if talleres.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1&tipo=taller">&laquo; Primera</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ talleres.previous_page_number }}&tipo=taller">Anterior</a>
+              </li>
+            {% endif %}
+        
+            <!-- Mostrar los números de página -->
+            {% for num in talleres.paginator.page_range %}
+              {% if num == talleres.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+              {% elif num > talleres.number|add:"-3" and num < talleres.number|add:"3" %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}&tipo=taller">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+        
+            {% if talleres.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ talleres.next_page_number }}&tipo=taller">Siguiente</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ talleres.paginator.num_pages }}&tipo=taller">Última &raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+        
+        {% endif %}
+      </div>
+
+      <!-- charlas Tab -->
+      <div class="tab-pane fade" id="charlas" role="tabpanel" aria-labelledby="charlas-tab">
+        <div class="row">
+          {% for charla in charlas %}
+            {% if charla.fecha or charla.hora or charla.ubicacion or charla.tema or charla.quien_dara_la_charla %}
+            <div class="col-lg-3 col-md-6 mb-4">
+              <div class="conversatorio-card">
+                  <div class="charla-image">
+                    {% if charla.imagen %}
+                    <img src="{{ charla.imagen.url }}" alt="{{ charla.quien_dara_la_charla }}" class="img-fluid">
+                    {% else %}
+                        <img src="{% static 'image/icono.png' %}" alt="{{ charla.quien_dara_la_charla }}" class="img-fluid">
+                    {% endif %} 
+                    <div class="taller-badge">
+                      <div class="badge-content">
+                        {% if charla.fecha %}
+                          <span class="badge-day">{{ charla.fecha|date:"d" }}</span>
+                          <span class="badge-month">{{ charla.fecha|date:"M" }}</span>
+                        {% else %}
+                          <span class="badge-day">--</span>
+                          <span class="badge-month">--</span>
+                        {% endif %}
+                      </div>
+                    </div>                   
+                  </div>
+                  <div class="conversatorio-content">
+                    <div class="conversatorio-footer">
+                      <button class="btn btn-primary btn-charla-details" data-bs-toggle="modal" data-bs-target="#charlaModal{{ charla.id }}">
+                        <span>Más información</span>
+                        <i class="fas fa-arrow-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% empty %}
+            <div class="col-12">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-microphone-alt"></i>
+                </div>
+                <h3>No hay charlas programadas</h3>
+                <p>Estamos organizando nuevas charlas informativas sobre tenencia responsable y cuidado animal. ¡Vuelve pronto!</p>
+                <a href="#contacto" class="btn btn-primary mt-3">
+                  <i class="fas fa-envelope"></i> Recibir información sobre charlas
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div> 
+        {% if charlas.paginator.num_pages > 1 %}
+        <nav aria-label="Paginación de charlas">
+          <ul class="pagination justify-content-center">
+            {% if charlas.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1&tipo=charla">&laquo; Primera</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ charlas.previous_page_number }}&tipo=charla">Anterior</a>
+              </li>
+            {% endif %}
+        
+            <!-- Mostrar los números de página -->
+            {% for num in charlas.paginator.page_range %}
+              {% if num == charlas.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+              {% elif num > charlas.number|add:"-3" and num < charlas.number|add:"3" %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}&tipo=charla">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+        
+            {% if charlas.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ charlas.next_page_number }}&tipo=charla">Siguiente</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ charlas.paginator.num_pages }}&tipo=charla">Última &raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+        
+        {% endif %}
+      </div> 
+  
+      <!-- Conversatorios Tab -->
+      <div class="tab-pane fade" id="conversatorios" role="tabpanel" aria-labelledby="conversatorios-tab">
+        <div class="row">
+          {% for conversatorio in conversatorios %}
+            {% if conversatorio.tema and conversatorio.fecha and conversatorio.hora and conversatorio.ubicacion %}
+            <div class="col-lg-3 col-md-6 mb-4"> <!-- Ahora hay 4 columnas en pantallas grandes -->
+              <div class="conversatorio-card">
+                  <div class="charla-image">
+                    {% if conversatorio.imagen %}
+                    <img src="{{ conversatorio.imagen.url }}" alt="{{ conversatorio.tema }}" class="img-fluid">
+                    {% else %}
+                        <img src="{% static 'image/icono.png' %}" alt="{{ conversatorio.tema }}" class="img-fluid">
+                    {% endif %}
+                    <div class="taller-badge">
+                      <div class="badge-content">
+                        {% if conversatorio.fecha %}
+                          <span class="badge-day">{{ conversatorio.fecha|date:"d" }}</span>
+                          <span class="badge-month">{{ conversatorio.fecha|date:"M" }}</span>
+                        {% else %}
+                          <span class="badge-day">--</span>
+                          <span class="badge-month">--</span>
+                        {% endif %}
+                      </div>
+                  </div>
+                  </div>
+                  <div class="conversatorio-content">
+                    <div class="conversatorio-footer">
+                      <button class="btn btn-primary conversatorio-btn" data-bs-toggle="modal" data-bs-target="#conversatorioModal{{ conversatorio.id }}">
+                        <span>Más información</span>
+                        <i class="fas fa-arrow-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% empty %}
+            <div class="col-12">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-microphone-alt"></i>
+                </div>
+                <h3>No hay conversatorios programados</h3>
+                <p>Estamos organizando nuevos espacios de diálogo sobre temas relacionados con el bienestar animal. ¡Vuelve pronto!</p>
+                <a href="#contacto" class="btn btn-primary mt-3">
+                  <i class="fas fa-paper-plane"></i> Proponer un tema para conversatorio
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% if conversatorios.paginator.num_pages > 1 %}
+        <nav aria-label="Paginación de conversatorios">
+          <ul class="pagination justify-content-center">
+            {% if conversatorios.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1&tipo=conversatorios">&laquo; Primera</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ conversatorios.previous_page_number }}&tipo=conversatorios">Anterior</a>
+              </li>
+            {% endif %}
+        
+            <!-- Mostrar los números de página -->
+            {% for num in conversatorios.paginator.page_range %}
+              {% if num == conversatorios.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+              {% elif num > conversatorios.number|add:"-3" and num < conversatorios.number|add:"3" %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}&tipo=conversatorios">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+        
+            {% if conversatorios.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ conversatorios.next_page_number }}&tipo=conversatorios">Siguiente</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ conversatorios.paginator.num_pages }}&tipo=conversatorios">Última &raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+        
+        {% endif %}
+      </div>
+
+      <!-- Adopcion Tab -->
+        <div class="tab-pane fade" id="adopcion" role="tabpanel" aria-labelledby="adopcion-tab">
+          <div class="row">
+            {% for jornada in jornadas_adopcion %}
+            <div class="col-lg-3 col-md-6 mb-4"> 
+              <div class="conversatorio-card">
+                    <div class="charla-image">
+                      {% if jornada.imagen %}
+                        <img src="{{ jornada.imagen.url }}" alt="{{ jornada.tema }}" class="image-fluid">
+                      {% else %}
+                      {% endif %}
+                      <div class="taller-badge">
+                        <div class="badge-content">
+                          {% if jornada.fecha %}
+                            <span class="badge-day">{{ jornada.fecha|date:"d" }}</span>
+                            <span class="badge-month">{{ jornada.fecha|date:"M" }}</span>
+                          {% else %}
+                            <span class="badge-day">--</span>
+                            <span class="badge-month">--</span>
+                          {% endif %}
+                        </div>
+                    </div>
+                    </div>
+                    <div class="conversatorio-content">
+                      <div class="conversatorio-footer">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jornadaModal{{ jornada.id }}">
+                          <span>Más información</span>
+                          <i class="fas fa-arrow-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            {% empty %}
+              <div class="col-12">
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <i class="fas fa-microphone-alt"></i>
+                  </div>
+                  <h3>No hay conversatorios programados</h3>
+                  <p>Estamos organizando nuevos espacios de diálogo sobre temas relacionados con el bienestar animal. ¡Vuelve pronto!</p>
+                  <a href="#contacto" class="btn btn-primary mt-3">
+                    <i class="fas fa-paper-plane"></i> Proponer un tema para conversatorio
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          {% if jornadas_adopcion.paginator.num_pages > 1 %}
+          <nav aria-label="Paginación de jornadas de adopción">
+            <ul class="pagination justify-content-center">
+              {% if jornadas_adopcion.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page=1&tipo=jornadas_adopcion">&laquo; Primera</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ jornadas_adopcion.previous_page_number }}&tipo=jornadas_adopcion">Anterior</a>
+                </li>
+              {% endif %}
+          
+              <!-- Mostrar los números de página -->
+              {% for num in jornadas_adopcion.paginator.page_range %}
+                {% if num == jornadas_adopcion.number %}
+                  <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > jornadas_adopcion.number|add:"-3" and num < jornadas_adopcion.number|add:"3" %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}&tipo=jornadas_adopcion">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+          
+              {% if jornadas_adopcion.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ jornadas_adopcion.next_page_number }}&tipo=jornadas_adopcion">Siguiente</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ jornadas_adopcion.paginator.num_pages }}&tipo=jornadas_adopcion">Última &raquo;</a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+          
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Modales para Eventos -->
+{% for e in eventos %}
+<div class="modal fade" id="eventoModal{{ e.id }}" tabindex="-1" aria-labelledby="eventoModalLabel{{ e.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg animate__animated animate__fadeInDown">
+    <div class="modal-content evento-modal">
+
+      <!-- Enhanced Modal Header -->
+      <div class="modal-header evento-header">
+        <h5 class="modal-title" id="eventoModalLabel{{ e.id }}">{{ e.titulo }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Enhanced Modal Body -->
+      <div class="modal-body">
+        <div class="row">
+          <!-- Event Image Section -->
+          <div class="col-md-5">
+            <div class="evento-imagen-container">
+              {% if e.destacado %}
+                <div class="evento-featured">Destacado</div>
+              {% endif %}
+              {% if e.imagen %}
+                <img src="{{ e.imagen.url }}" alt="{{ e.titulo }}" class="evento-imagen">
+              {% else %}
+                <img src="{% static 'image/icono.png' %}" alt="{{ e.nombre }}" class="evento-imagen">
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Event Details Section -->
+          <div class="col-md-7">
+            {% if e.descripcion %}
+              <div class="evento-descripcion">
+                <h4>Descripción del evento</h4>
+                <p>{{ e.descripcion }}</p>
+              </div>
+            {% endif %}
+
+            <div class="evento-details">
+              {% if e.fecha %}
+                <div class="detail-item">
+                  <div class="icon-container icon-date">
+                    <i class="fas fa-calendar-alt fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Fecha</span>
+                    <span class="detail-value">{{ e.fecha }}</span>
+                  </div>
+                </div>
+                
+                <div class="detail-item">
+                  <div class="icon-container icon-time">
+                    <i class="fas fa-clock fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Hora</span>
+                    <span class="detail-value">{{ e.fecha|time:"H:i" }}</span>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if e.lugar %}
+                <div class="detail-item">
+                  <div class="icon-container icon-location">
+                    <i class="fas fa-map-marker-alt fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Ubicación</span>
+                    <span class="detail-value">{{ e.lugar }}</span>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if e.organizador %}
+                <div class="detail-item">
+                  <div class="icon-container icon-organizer">
+                    <i class="fas fa-user fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Organizado por</span>
+                    <span class="detail-value">{{ e.organizador }}</span>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Modal Footer -->
+      <div class="modal-footer evento-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        {% if e.enlace_registro %}
+          <a href="{{ e.enlace_registro }}" class="btn btn-primary">
+            Registrarme ahora
+            <span class="register-badge"></span>
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Modales para Talleres -->
+{% for taller in talleres %}
+<div class="modal fade" id="tallerModal{{ taller.id }}" tabindex="-1" aria-labelledby="tallerModalLabel{{ taller.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg animate__animated animate__fadeInDown">
+    <div class="modal-content evento-modal">
+
+      <!-- Encabezado del modal -->
+      <div class="modal-header evento-header">
+        <h5 class="modal-title" id="tallerModalLabel{{ taller.id }}">{{ taller.nombre }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Cuerpo del modal -->
+      <div class="modal-body">
+        <div class="row">
+          <!-- Imagen del taller -->
+          <div class="col-md-5">
+            <div class="evento-imagen-container">
+              {% if taller.destacado %}
+                <div class="evento-featured">Destacado</div>
+              {% endif %}
+              {% if taller.imagen %}
+                <img src="{{ taller.imagen.url }}" alt="{{ taller.nombre }}" class="evento-imagen">
+              {% else %}
+                <img src="{% static 'image/icono.png' %}" alt="{{ taller.nombre }}" class="evento-imagen">
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Detalles del taller -->
+          <div class="col-md-7">
+            {% if taller.descripcion %}
+              <div class="evento-descripcion">
+                <h4>Descripción del taller</h4>
+                <p>{{ taller.descripcion }}</p>
+              </div>
+            {% endif %}
+
+            <div class="evento-details">
+              {% if taller.fecha %}
+                <div class="detail-item">
+                  <div class="icon-container icon-date">
+                    <i class="fas fa-calendar-alt fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Fecha</span>
+                    <span class="detail-value">{{ taller.fecha }}</span>
+                  </div>
+                </div>
+              {% endif %}
+              
+              {% if taller.hora %}
+                <div class="detail-item">
+                  <div class="icon-container icon-time">
+                    <i class="fas fa-clock fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Hora</span>
+                    <span class="detail-value">{{ taller.hora }}</span>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if taller.lugar %}
+                <div class="detail-item">
+                  <div class="icon-container icon-location">
+                    <i class="fas fa-map-marker-alt fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Ubicación</span>
+                    <span class="detail-value">{{ taller.lugar }}</span>
+                  </div>
+                </div>
+              {% endif %}
+              
+              {% if taller.instructor %}
+                <div class="detail-item">
+                  <div class="icon-container icon-organizer">
+                    <i class="fas fa-chalkboard-teacher fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Instructor</span>
+                    <span class="detail-value">{{ taller.instructor }}</span>
+                  </div>
+                </div>
+              {% endif %}
+              
+              {% if taller.cupos %}
+                <div class="detail-item">
+                  <div class="icon-container" style="background-color: rgba(253, 213, 249, 0.25);">
+                    <i class="fas fa-users fa-lg" style="color: var(--primary-color);"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Cupos disponibles</span>
+                    <span class="detail-value">{{ taller.cupos }}</span>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie del modal -->
+      <div class="modal-footer evento-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        {% if taller.enlace_inscripcion %}
+          <a href="{{ taller.enlace_inscripcion }}" class="btn btn-primary">
+            Inscribirme ahora
+            <span class="register-badge"></span>
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Modales para Charlas -->
+{% for charla in charlas %}
+<div class="modal fade" id="charlaModal{{ charla.id }}" tabindex="-1" aria-labelledby="charlaModalLabel{{ charla.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg animate__animated animate__fadeInDown">
+    <div class="modal-content evento-modal">
+
+      <!-- Encabezado del modal -->
+      <div class="modal-header evento-header" style="background: linear-gradient(135deg, var(--accent-color), #007d99);">
+        <h5 class="modal-title" id="charlaModalLabel{{ charla.id }}">
+          <i class="fa-solid fa-microphone-lines me-2"></i>{{ charla.tema }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Cuerpo del modal -->
+      <div class="modal-body">
+        <div class="row">
+          <!-- Imagen de la charla -->
+          <div class="col-md-5">
+            <div class="evento-imagen-container">
+              {% if charla.modalidad == "Virtual" %}
+                <div class="evento-featured">Virtual</div>
+              {% elif charla.modalidad == "Presencial" %}
+                <div class="evento-featured" style="background: var(--primary-color);">Presencial</div>
+              {% endif %}
+              
+              {% if charla.imagen %}
+                <img src="{{ charla.imagen.url }}" alt="{{ charla.tema }}" class="evento-imagen">
+              {% else %}
+                <img src="{% static 'image/icono.png' %}" alt="{{ charla.tema }}" class="evento-imagen">
+              {% endif %}
+            </div>
+            
+            {% if charla.quien_dara_la_charla %}
+              <div class="expositor-container">
+                <div class="expositor-avatar">
+                  <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="expositor-info">
+                  <span class="expositor-label">Expositor</span>
+                  <span class="expositor-name">{{ charla.quien_dara_la_charla }}</span>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Detalles de la charla -->
+          <div class="col-md-7">
+            {% if charla.descripcion %}
+              <div class="evento-descripcion">
+                <h4>Acerca de esta charla</h4>
+                <p>{{ charla.descripcion }}</p>
+              </div>
+            {% endif %}
+
+            {% if charla.actividades %}
+              <div class="evento-actividades">
+                <h4>Actividades</h4>
+                <p>{{ charla.actividades }}</p>
+              </div>
+            {% endif %}
+
+            <div class="evento-details">
+              {% if charla.fecha %}
+                <div class="detail-item">
+                  <div class="icon-container icon-date">
+                    <i class="fas fa-calendar-alt fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Fecha</span>
+                    <span class="detail-value">{{ charla.fecha }}</span>
+                  </div>
+                </div>
+              {% endif %}
+              
+              {% if charla.hora %}
+                <div class="detail-item">
+                  <div class="icon-container icon-time">
+                    <i class="fas fa-clock fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Hora</span>
+                    <span class="detail-value">{{ charla.hora }}</span>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if charla.ubicacion %}
+                <div class="detail-item">
+                  <div class="icon-container icon-location">
+                    <i class="fas fa-map-marker-alt fa-lg"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Ubicación</span>
+                    <span class="detail-value">{{ charla.ubicacion }}</span>
+                  </div>
+                </div>
+              {% endif %}
+              
+              {% if charla.modalidad %}
+                <div class="detail-item">
+                  <div class="icon-container" style="background-color: rgba(186, 188, 242, 0.2);">
+                    <i class="fas fa-broadcast-tower fa-lg" style="color: var(--accent-color);"></i>
+                  </div>
+                  <div class="detail-content">
+                    <span class="detail-label">Modalidad</span>
+                    <span class="detail-value">{{ charla.modalidad }}</span>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie del modal -->
+      <div class="modal-footer evento-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fa-solid fa-xmark me-1"></i> Cerrar
+        </button>
+        {% if charla.enlace %}
+          <a href="{{ charla.enlace }}" target="_blank" class="btn btn-primary">
+            {% if charla.modalidad == "Virtual" %}
+              <i class="fas fa-video me-1"></i> Unirse a charla
+            {% else %}
+              <i class="fas fa-ticket-alt me-1"></i> Reservar asiento
+            {% endif %}
+            <span class="register-badge"></span>
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Modales para Conversatorios -->
+{% for conversatorio in conversatorios %}
+<div class="modal fade" id="conversatorioModal{{ conversatorio.id }}" tabindex="-1" aria-labelledby="conversatorioModalLabel{{ conversatorio.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg animate__animated animate__fadeInDown">
+    <div class="modal-content conversatorio-modal">
+
+      <!-- Encabezado del modal -->
+      <div class="modal-header conversatorio-header" style="background: linear-gradient(135deg, #5765d6, #3b4592);">
+        <h5 class="modal-title" id="conversatorioModalLabel{{ conversatorio.id }}">
+          <i class="fa-solid fa-comments me-2"></i>{{ conversatorio.titulo }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Cuerpo del modal -->
+      <div class="modal-body py-4">
+        <div class="row g-4">
+          <!-- Imagen del conversatorio -->
+          <div class="col-md-5">
+            <div class="conversatorio-imagen-container">
+              {% if conversatorio.tema %}
+                <div class="conversatorio-badge">
+                  <i class="fas fa-comments-alt me-1"></i> {{ conversatorio.tema }}
+                </div>
+              {% endif %}
+              
+              {% if conversatorio.imagen %}
+                <img src="{{ conversatorio.imagen.url }}" alt="{{ conversatorio.titulo }}" class="conversatorio-imagen">
+              {% else %}
+                <img src="{% static 'image/icono.png' %}" alt="{{ conversatorio.titulo }}" class="conversatorio-imagen">
+              {% endif %}
+              
+              {% if conversatorio.moderador %}
+                <div class="moderador-container">
+                  <div class="moderador-avatar">
+                    <i class="fa-solid fa-user-tie"></i>
+                  </div>
+                  <div class="moderador-info">
+                    <span class="moderador-label">Moderador</span>
+                    <span class="moderador-name">{{ conversatorio.moderador }}</span>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Detalles del conversatorio -->
+          <div class="col-md-7">
+            <div class="row">
+              <!-- Información principal -->
+              <div class="col-md-12 mb-4">
+                {% if conversatorio.descripcion %}
+                  <div class="conversatorio-descripcion">
+                    <h4><i class="fas fa-quote-left text-muted me-2"></i>Acerca de este conversatorio</h4>
+                    <p>{{ conversatorio.descripcion }}</p>
+                  </div>
+                {% endif %}
+              </div>
+              
+              <!-- Detalles de logística -->
+              <div class="col-md-12">
+                <div class="logistica-container">
+                  <h4 class="mb-3">Detalles del evento</h4>
+                  <div class="conversatorio-details">
+                    {% if conversatorio.fecha %}
+                      <div class="detail-item">
+                        <div class="detail-icon bg-primary-soft">
+                          <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="detail-content">
+                          <span class="detail-label">Fecha</span>
+                          <span class="detail-value">{{ conversatorio.fecha}}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                    
+                    {% if conversatorio.hora %}
+                      <div class="detail-item">
+                        <div class="detail-icon bg-warning-soft">
+                          <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="detail-content">
+                          <span class="detail-label">Horario</span>
+                          <span class="detail-value">{{ conversatorio.hora }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                    
+                    {% if conversatorio.ubicacion %}
+                      <div class="detail-item">
+                        <div class="detail-icon bg-danger-soft">
+                          <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="detail-content">
+                          <span class="detail-label">Ubicación</span>
+                          <span class="detail-value">{{ conversatorio.ubicacion }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+
+                    {% if conversatorio.tema %}
+                      <div class="detail-item">
+                        <div class="detail-icon bg-info-soft">
+                          <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="detail-content">
+                          <span class="detail-label">Tema central</span>
+                          <span class="detail-value">{{ conversatorio.tema }}</span>
+                        </div>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie del modal -->
+      <div class="modal-footer conversatorio-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fa-solid fa-xmark me-1"></i> Cerrar
+        </button>
+        {% if conversatorio.enlace %}
+          <a href="{{ conversatorio.enlace }}" target="_blank" class="btn btn-primary">
+            <i class="fas fa-external-link-alt me-1"></i> Participar
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+<!-- Modales para Jornadas de Adopción -->
+{% for jornada in jornadas_adopcion %}
+<div class="modal fade" id="jornadaModal{{ jornada.id }}" tabindex="-1" aria-labelledby="jornadaModalLabel{{ jornada.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-xl animate__animated animate__fadeInUp">
+    <div class="modal-content jornada-modal">
+      
+      <!-- Encabezado del modal -->
+      <div class="modal-header jornada-header" style="background: linear-gradient(135deg, #38b000, #70e000);">
+        <h5 class="modal-title" id="jornadaModalLabel{{ jornada.id }}">
+          <i class="fa-solid fa-paw me-2"></i>{{ jornada.nombre }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Cuerpo del modal -->
+      <div class="modal-body py-4">
+        <div class="row">
+          <!-- Imagen a la izquierda -->
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="jornada-imagen-container">
+              {% if jornada.tipo_evento %}
+                <div class="jornada-badge">
+                  <i class="fas fa-star me-1"></i> {{ jornada.tipo_evento }}
+                </div>
+              {% endif %}
+
+              {% if jornada.imagen %}
+                <img src="{{ jornada.imagen.url }}" alt="{{ jornada.nombre }}" class="jornada-imagen">
+              {% else %}
+                <img src="{% static 'image/icono.png' %}" alt="{{ jornada.nombre }}" class="jornada-imagen">
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Detalles del evento a la derecha -->
+          <div class="col-lg-8">
+            <div class="jornada-content-container">
+
+              <!-- Información rápida -->
+              <div class="jornada-quickinfo mb-4">
+                <div class="jornada-quickinfo-header">
+                  <div class="icon-wrap">
+                    <i class="fa-solid fa-calendar-check"></i>
+                  </div>
+                  <h4>Detalles del evento</h4>
+                </div>
+                <div class="jornada-quickinfo-body">
+                  {% if jornada.fecha %}
+                    <div class="info-row">
+                      <div class="info-icon bg-success-soft">
+                        <i class="fas fa-calendar-alt"></i>
+                      </div>
+                      <div class="info-content">
+                        <label>Fecha</label>
+                        <span>{{ jornada.fecha }}</span>
+                      </div>
+                    </div>
+                  {% endif %}
+                  {% if jornada.hora %}
+                    <div class="info-row">
+                      <div class="info-icon bg-warning-soft">
+                        <i class="fas fa-clock"></i>
+                      </div>
+                      <div class="info-content">
+                        <label>Hora</label>
+                        <span>{{ jornada.hora }}</span>
+                      </div>
+                    </div>
+                  {% endif %}
+                  {% if jornada.ubicacion %}
+                    <div class="info-row">
+                      <div class="info-icon bg-danger-soft">
+                        <i class="fas fa-map-marker-alt"></i>
+                      </div>
+                      <div class="info-content">
+                        <label>Lugar</label>
+                        <span>{{ jornada.ubicacion }}</span>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Descripción principal -->
+              {% if jornada.descripcion %}
+              <div class="jornada-section">
+                <div class="section-header">
+                  <div class="icon-circle">
+                    <i class="fa-solid fa-info"></i>
+                  </div>
+                  <h3>Acerca de esta jornada</h3>
+                </div>
+                <div class="section-content">
+                  <p class="jornada-descripcion">{{ jornada.descripcion }}</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <!-- Actividades -->
+              {% if jornada.actividades %}
+              <div class="jornada-section">
+                <div class="section-header">
+                  <div class="icon-circle">
+                    <i class="fa-solid fa-list-check"></i>
+                  </div>
+                  <h3>Actividades planificadas</h3>
+                </div>
+                <div class="section-content">
+                  <div class="actividades-container">
+                    {{ jornada.actividades|linebreaks }}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie del modal -->
+      <div class="modal-footer jornada-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}
+
+
+

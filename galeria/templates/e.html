@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/galeria.css' %}">
+{% endblock %}
+
+{% block title %}Nuestra Galeria{% endblock %}
+{% block content %}
+<!-- Galería Section -->
+<section id="galeria" class="galeria-section mt-5">
+  <div class="container">
+    <div class="titulo-actividades">
+      <div class="iconos-decorativos">
+        <i class="fas fa-paw icono icono-pata"></i>
+        <i class="fas fa-bone icono icono-hueso"></i>
+        <i class="fas fa-heart icono icono-corazon"></i>
+        <i class="fas fa-home icono icono-casa"></i>
+      </div>
+      <h2><i class="fas fa-paw"></i> Nuestra Galería <i class="fas fa-bone"></i></h2>
+      <p><i class="fas fa-heart"></i> Momentos especiales en nuestro refugio <i class="fas fa-dog"></i></p>
+    </div>
+    
+    <div class="galeria-grid">
+        {% for galeria in fotos %}
+            <div class="galeria-item">
+                <div class="galeria-card">
+                    <div class="galeria-image">
+                        {% for imagen in galeria.imagenes.all %}
+                            <img src="{% if imagen.imagen %}{{ imagen.imagen.url }}{% else %}/placeholder.svg{% endif %}" 
+                                 alt="{{ galeria.nombre }}" 
+                                 class="img-fluid lazyload">
+                        {% empty %}
+                        <img src="{% static 'image/icono.png' %}" alt="Nuestro refugio" class="about-img img-fluid">
+
+                        {% endfor %}
+                        
+                        <!-- Botón para abrir el modal con las imágenes -->
+                        <div class="galeria-overlay">
+                            <div class="galeria-icons">
+                                <button class="galeria-icon view-icon" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#galeriaModal{{ galeria.id }}" 
+                                    data-id="{{ galeria.id }}" 
+                                    data-imagenes='[{% for imagen in galeria.imagenes.all %}"{{ imagen.imagen.url }}"{% if not forloop.last %}, {% endif %}{% endfor %}]'>
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                            </div>
+                            <div class="galeria-caption">
+                                <h4>{{ galeria.nombre }}</h4>
+                                <p>{{ galeria.fecha }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <h3>No hay imágenes en la galería</h3>
+                    <p>Pronto añadiremos fotos de nuestros animales y eventos.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Paginación -->
+    {% if fotos.has_other_pages %}
+    <div class="pagination-container">
+      <ul class="pagination">
+        {% if fotos.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ fotos.previous_page_number }}">Anterior</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Anterior</span>
+          </li>
+        {% endif %}
+        
+        {% for i in fotos.paginator.page_range %}
+          {% if fotos.number == i %}
+            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+          {% elif i > fotos.number|add:"-3" and i < fotos.number|add:"3" %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if fotos.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ fotos.next_page_number }}">Siguiente</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Siguiente</span>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Modal de Galería -->
+{% for galeria in fotos %}
+<div class="modal fade" id="galeriaModal{{ galeria.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ galeria.nombre }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-8 position-relative">
+            {% if galeria.imagenes.exists %}
+              <div id="carousel{{ galeria.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  {% for img in galeria.imagenes.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                      <img src="{{ img.imagen.url }}" class="carousel-img" alt="{{ galeria.nombre }}">
+                    </div>
+                  {% endfor %}
+                </div>
+                <!-- Controles del carrusel -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ galeria.id }}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ galeria.id }}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Siguiente</span>
+                </button>
+              </div>
+            {% else %}
+            <img src="{% static 'image/icono.png' %}" alt="Nuestro refugio" class="carousel-img">
+            {% endif %}
+          </div>
+          <div class="col-md-4">
+            <div class="image-info">
+              <div class="info-item">
+                <span class="info-label">Fecha:</span>
+                <span class="info-value">{{ galeria.fecha }}</span>
+              </div>
+              <div class="info-item description-item">
+                <span class="info-label">Descripción:</span>
+                <p class="info-value">{{ galeria.descripcion }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <a href="{% if galeria.imagenes.all.first %}{{ galeria.imagenes.all.first.imagen.url }}{% else %}/placeholder.svg{% endif %}" 
+           id="modalDownload" class="btn btn-primary" download>Descargar</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const galeriaItems = document.querySelectorAll(".galeria-item");
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target); // para que no se repita
+        }
+      });
+    }, {
+      threshold: 0.2
+    });
+
+    galeriaItems.forEach(item => {
+      // Aseguramos que comience sin "visible"
+      item.classList.remove("visible");
+      observer.observe(item);
+    });
+  });
+</script>
+
+
+{% endblock %}

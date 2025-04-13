@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/nosotros.css' %}">
+{% endblock %}
+
+{% block title %}Nuestra Historia {% endblock %}
+{% block content %}
+
+<!-- Sobre Nosotros Section -->
+<section class="about-section  mt-5">
+  <div class="container">
+    <div class="titulo-actividades">
+      <div class="iconos-decorativos">
+        <i class="fas fa-paw icono icono-pata"></i>
+        <i class="fas fa-bone icono icono-hueso"></i>
+        <i class="fas fa-heart icono icono-corazon"></i>
+        <i class="fas fa-home icono icono-casa"></i>
+      </div>      
+      <h2 class="fw-bold"><i class="fas fa-paw"></i> Sobre Nosotros</h2> <!-- Icono de huella de animal -->
+      <p class="lead mb-5">Conoce quiénes somos y nuestra misión de proteger y dar una segunda oportunidad a los animales necesitados.</p>
+      <div class="divider mx-auto"></div>
+    </div>
+
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="about-content p-4 rounded-custom shadow-custom">
+          {% if sobre_nosotros %}
+            <h3 class="fw-bold mb-3">{{ sobre_nosotros.nombre_refugio }}</h3>
+            
+            <div class="row mb-4">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <div class="info-box p-3 rounded-custom bg-light-primary">
+                  <h5 class="fw-bold mb-2"><i class="fas fa-calendar-alt"></i> Fundado en</h5> <!-- Icono de calendario -->
+                  <p class="mb-0">{{ sobre_nosotros.fecha_fundacion }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-box p-3 rounded-custom bg-light-primary">
+                  <h5 class="fw-bold mb-2"><i class="fas fa-paw"></i> Rescatados</h5> <!-- Icono de huella -->
+                  <p class="mb-0">{{ sobre_nosotros.animales_rescatados }}+</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <h4 class="fw-bold mb-3"><i class="fas fa-book-open"></i> Nuestra Historia</h4> <!-- Icono de libro -->
+              <p class="about-text" id="short-history">
+                {{ sobre_nosotros.historia|truncatewords:55 }}
+              </p>
+              <p class="about-text full-text" id="full-history" style="display: none;">
+                {{ sobre_nosotros.historia }}
+              </p>
+              <button class="btn btn-primary mt-2" id="toggle-history">Ver más</button>
+            </div>
+          {% else %}
+            <p>No hay información disponible sobre el refugio en este momento.</p>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="about-image-wrapper">
+          {% if sobre_nosotros and sobre_nosotros.imagen %}
+            <img src="{{ sobre_nosotros.imagen.url }}" alt="Refugio de animales" class="img-fluid rounded-custom about-image">
+          {% else %}
+            <img src="{% static 'image/icono.png' %}" alt="Refugio de animales" class="img-fluid rounded-custom about-image">
+          {% endif %}
+          <div class="stats-badge">
+            <span class="fw-bold"><i class="fas fa-heart"></i> {{ sobre_nosotros.animales_rescatados }}+ vidas salvadas</span> <!-- Icono de corazón -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Equipo Section -->
+<section class="team-section">
+  <div class="container">
+    <div class="titulo-actividades">
+      <div class="iconos-decorativos">
+        <i class="fas fa-paw icono icono-pata"></i>
+        <i class="fas fa-bone icono icono-hueso"></i>
+        <i class="fas fa-heart icono icono-corazon"></i>
+        <i class="fas fa-home icono icono-casa"></i>
+      </div>  
+      <h2 class="fw-bold"><i class="fas fa-users"></i> Nuestro Equipo</h2>
+      <div class="divider mx-auto"></div>
+      <p class="lead">Conoce a las personas dedicadas que trabajan incansablemente para cuidar y proteger a nuestros animales.</p>
+    </div>
+    <div class="row" id="team-list">
+      {% for miembro in miembros %}
+        <div class="col-md-6 col-lg-4 col-xl-3 mb-4 team-card-container">
+          <div class="team-card">
+            <div class="team-image-container">
+              {% if miembro.imagen %}
+                <img src="{{ miembro.imagen.url }}" class="team-image img-fluid" loading="lazy" alt="{{ miembro.nombre }}">
+              {% else %}
+                <img src="{% static 'image/icono.png' %}" class="team-image img-fluid" loading="lazy" alt="{{ miembro.nombre }}">
+              {% endif %}
+            </div>
+            <div class="team-info p-3">
+              <h4 class="fw-bold mb-1"><i class="fas fa-user"></i> {{ miembro.nombre }}</h4>
+              <p class="team-role mb-1"><i class="fas fa-briefcase"></i> {{ miembro.rol }}</p>
+              <p class="team-position">{{ miembro.cargo }}</p>
+            </div>
+          </div>
+        </div>
+        {% if forloop.counter == 8 %}
+          <div class="col-12 text-center mt-4" id="load-more-btn-container">
+            <button id="load-more-btn" class="btn btn-primary">Ver más</button>
+          </div>
+        {% endif %}
+        {% empty %}
+        <div class="col-12">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <p>No hay miembros del equipo registrados actualmente.</p>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-12 text-center mt-4" id="load-less-btn-container" style="display: none;">
+      <button id="load-less-btn" class="btn btn-secondary">Ver menos</button>
+    </div>
+  </div>
+</section>
+
+<section class="volunteers-section">
+  <div class="container">
+    <div class="titulo-actividades">
+      <div class="iconos-decorativos">
+        <i class="fas fa-paw icono icono-pata"></i>
+        <i class="fas fa-bone icono icono-hueso"></i>
+        <i class="fas fa-heart icono icono-corazon"></i>
+        <i class="fas fa-home icono icono-casa"></i>
+      </div>  
+      <h2 class="fw-bold" data-aos="fade-up"><i class="fas fa-hands-helping"></i> Nuestros Voluntarios</h2>
+      <div class="divider mx-auto" data-aos="fade-up" data-aos-delay="100"></div>
+      <p class="lead" data-aos="fade-up" data-aos-delay="200">
+        <i class="fas fa-heart"></i> El corazón de nuestro refugio son los voluntarios que dedican su tiempo y amor a nuestros animales.
+      </p>
+    </div>
+
+    {% if voluntarios %}
+    <div class="filter-buttons text-center mb-4" data-aos="fade-up" data-aos-delay="300">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-filter active" data-filter="all" onclick="filterVolunteers('all')"><i class="fas fa-th-large"></i> Todos</button>
+        {% if "Entre semana" in disponibilidades %}
+          <button type="button" class="btn btn-filter" data-filter="Entre semana" onclick="filterVolunteers('Entre semana')"><i class="fas fa-briefcase"></i> Entre semana</button>
+        {% endif %}
+        {% if "Tiempo completo" in disponibilidades %}
+          <button type="button" class="btn btn-filter" data-filter="Tiempo completo" onclick="filterVolunteers('Tiempo completo')"><i class="fas fa-calendar-check"></i> Tiempo completo</button>
+        {% endif %}
+        {% if "Fines de semana" in disponibilidades %}
+          <button type="button" class="btn btn-filter" data-filter="Fines de semana" onclick="filterVolunteers('Fines de semana')"><i class="fas fa-calendar-week"></i> Fines de semana</button>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row volunteer-container">
+      {% for voluntario in voluntarios %}
+        <div class="col-md-4 col-lg-3 mb-4 volunteer-item" data-disponibilidad="{{ voluntario.disponibilidad }}">
+          <div class="volunteer-card">
+            <div class="volunteer-image-container">
+              {% if voluntario.imagen %}
+                <img src="{{ voluntario.imagen.url }}" class="volunteer-image" alt="Foto de {{ voluntario.nombre }}">
+              {% else %}
+                <img src="{% static 'image/icono.png' %}" class="volunteer-image" alt="Imagen por defecto">
+              {% endif %}
+            </div>
+            <div class="volunteer-info">
+              <h4 class="fw-bold"><i class="fas fa-user-circle"></i> {{ voluntario.nombre }}</h4>
+              <span class="availability-badge"><i class="fas fa-clock"></i> {{ voluntario.disponibilidad }}</span>
+              <div class="volunteer-details" style="display: none;">
+                <p class="team-position"><strong><i class="fas fa-phone-alt"></i> Contacto:</strong> {{ voluntario.contacto }}</p>
+                <p class="team-position"><strong><i class="fas fa-envelope"></i> Email:</strong> {{ voluntario.email }}</p>
+                <p class="team-role mb-1"><strong><i class="fas fa-star"></i> Habilidades:</strong> {{ voluntario.habilidades }}</p>
+              </div>
+              <button class="btn btn-primary btn-toggle" onclick="toggleDetails(this)">¿Quieres ver más información?</button>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3>No hay voluntarios registrados</h3>
+            <p>¿Te gustaría ser el primero? ¡Únete a nuestro equipo!</p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScV3LUZbows_I2BTl5m6UUuCGHkLmOmJzf7pM4wFJ1qVax8FA/viewform" target="_blank"  class="btn btn-primary">Quiero ser voluntario</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <div class="text-center mt-4">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScV3LUZbows_I2BTl5m6UUuCGHkLmOmJzf7pM4wFJ1qVax8FA/viewform" target="_blank" class="btn btn-primary">Únete como voluntario</a>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <button id="show-more" class="btn btn-secondary" onclick="showMore()" style="display: none;">Ver más</button>
+      <button id="show-less" class="btn btn-secondary" onclick="showLess()" style="display: none;">Ver menos</button>
+    </div>
+  </div>
+</section>
+
+
+{% endblock %}
