@@ -82,14 +82,19 @@ WSGI_APPLICATION = 'la_quiltra.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+import pymysql
+pymysql.install_as_MySQLdb()
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'refugio',
+        'USER': 'root',
+        'PASSWORD': 'katalina2.0',
+        'HOST': 'localhost',  # o el host donde tengas la base
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -154,11 +159,7 @@ JAZZMIN_SETTINGS = {
     "site_header": "Administración de Animales y Adopciones",
     "site_brand": "La Quiltra",
     "welcome_sign": "Bienvenido a la administración de adopciones",
-
-    # Logos e iconos
-    "site_logo": "image/icono.png",
-    "site_icon": "image/icono.png",
-    "login_logo": "image/icono.png",  # Imagen de fondo en login
+    "custom_css": "css/custom_admin.css",
 
     # UI Builder (Opcional)
     "show_ui_builder": True,  
@@ -213,27 +214,28 @@ JAZZMIN_SETTINGS = {
     "version": "1.0.0",
 }
 
+
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": False,
-    "accent": "accent-primary",
-    "navbar": "navbar-dark",
+    "brand_colour": "navbar-purple",
+    "accent": "accent-purple",
+    "navbar": "navbar-purple navbar-dark",
     "no_navbar_border": False,
     "navbar_fixed": False,
     "layout_boxed": False,
-    "footer_fixed": True,
+    "footer_fixed": False,
     "sidebar_fixed": False,
-    "sidebar": "sidebar-dark-primary",
+    "sidebar": "sidebar-dark-purple",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
-    "theme": "cyborg",
+    "theme": "darkly",
     "dark_mode_theme": None,
     "button_classes": {
         "primary": "btn-primary",
