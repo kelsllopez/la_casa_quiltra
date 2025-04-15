@@ -89,7 +89,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'refugio',
-        'USER': 'root',
+        'USER': 'la_quiltra',
         'PASSWORD': 'katalina2.0',
         'HOST': 'localhost',  # o el host donde tengas la base
         'PORT': '3306',
