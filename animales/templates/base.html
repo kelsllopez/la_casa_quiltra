@@ -89,9 +89,16 @@
     </div>
     <div class="footer-bottom">
       <div class="container">
-        <div class="copyright">
-          &copy; <span id="year"></span> <strong>Casa Quiltra</strong>. Todos los derechos reservados.
+        <div class="copyright text-center">
+          &copy; <span id="year"></span> <strong>La Casa Quiltra</strong>. Todos los derechos reservados. <br>
+          <small>
+            Sitio desarrollado por 
+            <a href="mailto:kels.sepulvedaa@gmail.com" style="color: black; text-decoration: none;">kels sepulveda</a> |
+            <a href="https://www.instagram.com/kels.sepulveda_/" target="_blank" style="color: black; text-decoration: none;"><i class="fab fa-instagram"></i> Instagram</a> |
+            <a href="https://www.facebook.com/profile.php?id=61570187237477&locale=es_LA" target="_blank" style="color: black; text-decoration: none;"><i class="fab fa-facebook"></i> Facebook</a>
+          </small>
         </div>
+        
       </div>
     </div>
   </footer>
@@ -130,24 +137,29 @@
   {% endif %}
 
   <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  
     document.addEventListener("DOMContentLoaded", function () {
       const backToTop = document.querySelector(".back-to-top");
-
-      window.addEventListener("scroll", function () {
-        if (window.scrollY > 200) {
-          backToTop.classList.add("active");
-        } else {
-          backToTop.classList.remove("active");
-        }
-      });
-
-      // Hacer que el botón haga scroll hacia arriba al hacer clic
-      backToTop.addEventListener("click", function (e) {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
+  
+      if (backToTop) { // Verificar si el botón existe
+        window.addEventListener("scroll", function () {
+          if (window.scrollY > 200) {
+            backToTop.classList.add("active");
+          } else {
+            backToTop.classList.remove("active");
+          }
+        });
+  
+        // Hacer que el botón haga scroll hacia arriba al hacer clic
+        backToTop.addEventListener("click", function (e) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
     });
   </script>
+  
 
 </body>
 </html>

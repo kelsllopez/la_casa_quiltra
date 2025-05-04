@@ -1,0 +1,6 @@
+
+/* En custom_admin.css */
+img[src*="icono.png"] {
+    width: 30px !important;
+    height: auto !important;
+}

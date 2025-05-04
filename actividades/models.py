@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 class Evento(models.Model):
     titulo = models.CharField(max_length=100, help_text="Título del evento.", null=False, blank=False)
@@ -8,7 +9,7 @@ class Evento(models.Model):
     hora = models.TimeField(help_text="Hora en la que se realizará el evento.", null=False, blank=False) 
     lugar = models.CharField(max_length=200, help_text="Ubicación donde se llevará a cabo el evento.", null=False, blank=False)
     organizador = models.CharField(max_length=100, help_text="Nombre del organizador del evento.", null=True, blank=True)
-    imagen = models.ImageField(upload_to='eventos/', blank=False, null=False, help_text="Imagen del evento.")
+    imagen = CloudinaryField('image', blank=False, null=False, help_text="Imagen del evento.")
     creado_el = models.DateTimeField(auto_now_add=True, help_text="Fecha y hora de creación del evento.")
     actualizado_el = models.DateTimeField(auto_now=True, help_text="Fecha y hora de última modificación del evento.")
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='evento_creado_por', help_text="Usuario que creó el evento.")
@@ -36,7 +37,7 @@ class Charla(models.Model):
     fecha = models.DateField(help_text="Fecha en la que se realizará la charla.", null=False, blank=False)
     hora = models.TimeField(help_text="Hora de inicio de la charla.", null=False, blank=False)
     actividades = models.TextField(help_text="Descripción de las actividades que se realizarán en la charla.", null=True, blank=True)
-    imagen = models.ImageField(upload_to='charlas/', null=True, blank=True, help_text="Imagen opcional para la charla.")
+    imagen = CloudinaryField('image', null=True, blank=True, help_text="Imagen opcional para la charla.")
     quien_dara_la_charla = models.CharField(max_length=255, help_text="Nombre de la persona que dará la charla.", null=False, blank=False)
     ubicacion = models.CharField(max_length=255, help_text="Ubicación de la charla.", null=False, blank=False)
     modalidad = models.CharField(
@@ -68,7 +69,7 @@ class Taller(models.Model):
     fecha = models.DateField(help_text="Fecha en la que se realizará el taller.", null=False, blank=False)
     hora = models.TimeField(help_text="Hora de inicio del taller.", null=False, blank=False)
     lugar = models.CharField(max_length=255, help_text="Lugar donde se realizará el taller.", null=False, blank=False)
-    imagen = models.ImageField(upload_to='talleres/', null=False, blank=False, help_text="Imagen opcional para el taller.")
+    imagen = CloudinaryField('image', null=False, blank=False, help_text="Imagen opcional para el taller.")
     creado_el = models.DateTimeField(auto_now_add=True, help_text="Fecha y hora de creación del taller .")
     actualizado_el = models.DateTimeField(auto_now=True, help_text="Fecha y hora de última modificación del taller.")
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='taller_creado_por', help_text="Usuario que creó el taller.")
@@ -93,7 +94,7 @@ class Conversatorio(models.Model):
     hora = models.TimeField(help_text="Hora de inicio del conversatorio.", null=False, blank=False)
     moderador = models.CharField(max_length=255, help_text="Nombre del moderador del conversatorio.", null=False, blank=False)
     ubicacion = models.CharField(max_length=255, help_text="Ubicación del conversatorio.", null=False, blank=False)
-    imagen = models.ImageField(upload_to='conversatorios/', null=False, blank=False, help_text="Imagen opcional para el conversatorio.")
+    imagen = CloudinaryField('image', null=False, blank=False, help_text="Imagen opcional para el conversatorio.")
     creado_el = models.DateTimeField(auto_now_add=True, help_text="Fecha y hora de creación del taller .")
     actualizado_el = models.DateTimeField(auto_now=True, help_text="Fecha y hora de última modificación del taller.")
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='conversatorio_creado_por', help_text="Usuario que creó el conversatorio.")
@@ -126,7 +127,7 @@ class JornadaAdopcion(models.Model):
         help_text="Tipo de evento (Animales Fest, Expo, etc.).", null=False, blank=False
     )
     ubicacion = models.CharField(max_length=255, help_text="Ubicación del evento de adopción.", null=False, blank=False)
-    imagen = models.ImageField(upload_to='jornadas_adopcion/', null=False, blank=False, help_text="Imagen opcional para la jornada de adopción.")
+    imagen = CloudinaryField('image', null=False, blank=False, help_text="Imagen opcional para la jornada de adopción.")
     creado_el = models.DateTimeField(auto_now_add=True, help_text="Fecha y hora de creación del jornada .")
     actualizado_el = models.DateTimeField(auto_now=True, help_text="Fecha y hora de última modificación del jornada.")
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='jornada_creado_por', help_text="Usuario que creó el jornada.")

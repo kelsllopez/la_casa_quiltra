@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 class Galeria(models.Model):
     nombre = models.CharField(max_length=255, help_text="Ingresa el nombre de la imagen o galería.")
@@ -24,7 +25,7 @@ class Galeria(models.Model):
 
 class Imagen(models.Model):
     galeria = models.ForeignKey(Galeria, related_name='imagenes', on_delete=models.CASCADE, null=False, blank=False)
-    imagen = models.ImageField(upload_to='galeria/', help_text="Sube la imagen para la galería.", null=False, blank=False)
+    imagen = CloudinaryField('image', help_text="Sube la imagen para la galería.", null=False, blank=False)
 
     def __str__(self):
         return f"Imagen {self.id} de {self.galeria.nombre}"

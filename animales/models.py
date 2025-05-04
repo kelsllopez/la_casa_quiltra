@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 # 📌 Modelo de Especies
 class Especie(models.Model):
@@ -67,7 +68,7 @@ class Animal(models.Model):
 
 class Imagen(models.Model):
     galeria = models.ForeignKey(Animal, related_name='imagenes', on_delete=models.CASCADE)  # Aquí usamos 'imagenes' como related_name
-    imagen = models.ImageField(upload_to='animales/', help_text="Imagen del animal.")
+    imagen = CloudinaryField('image', help_text="Imagen del animal.")
 
     def __str__(self):
         return f"Imagen {self.id} de {self.galeria.nombre}"

@@ -12,6 +12,22 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+import environ
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+env = environ.Env()
+environ.Env.read_env()
+
+cloudinary.config(
+    cloud_name=env('CLOUDINARY_CLOUD_NAME'),
+    api_key=env('CLOUDINARY_API_KEY'),
+    api_secret=env('CLOUDINARY_API_SECRET'),
+    secure=True
+)
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +36,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*hc%$-8j4_kcj4)2#5njls1rw@c7t-5em#4!=uwpc(tdxo*yzk'
+SECRET_KEY = env('SECRET_KEY', default='dev-key')
+DEBUG = env.bool('DEBUG', default=True)
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '50.116.36.122', '192.168.100.11']
 
 # settings.py
 
@@ -42,12 +57,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
+    'cloudinary_storage',
     'actividades',
     'animales',
     'galeria',
     'nosotros',
     'preguntas',
 ]
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,7 +85,7 @@ ROOT_URLCONF = 'la_quiltra.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ os.path.join(BASE_DIR, 'templates')], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,22 +100,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'la_quiltra.wsgi.application'
 
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 import pymysql
 pymysql.install_as_MySQLdb()
+import dj_database_url
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'refugio',
-        'USER': 'nicolet',
-        'PASSWORD': 'laquiltravaldivia2.0',
-        'HOST': 'localhost',  # o el host donde tengas la base
-        'PORT': '3306',
-    }
+    'default': dj_database_url.config(default=env('DATABASE_URL'))
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -136,6 +153,13 @@ STATIC_URL = '/static/'
 # Si estás en un entorno de producción, debes usar esta configuración
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -144,13 +168,18 @@ EMAIL_HOST_USER = 'kelsregla@gmail.com'
 EMAIL_HOST_PASSWORD = 'sfru osjs dean lifx'
 
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if os.environ.get('RENDER'):
+    DEBUG = False
+    ALLOWED_HOSTS += ['tu-app.onrender.com']
+    CSRF_TRUSTED_ORIGINS = ['https://tu-app.onrender.com', 'https://lacasaquiltra.com']
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 JAZZMIN_SETTINGS = {

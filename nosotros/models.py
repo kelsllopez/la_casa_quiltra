@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 class MiembroEquipo(models.Model):
     nombre = models.CharField(max_length=100,help_text="Ingresa el nombre completo del miembro del equipo")
     rol = models.CharField(max_length=100,help_text="Ingresa el rol del miembro dentro del equipo (Ej: Fundadora, Veterinario, etc.)")
     cargo = models.CharField(max_length=100,help_text="Especifica el cargo o puesto específico del miembro (Ej: Coordinadora, Voluntario, etc.)")
-    imagen = models.ImageField(upload_to='miembros/',help_text="Sube la imagen para los Miembros.",blank=True,null=True)
+    imagen = CloudinaryField('image',help_text="Sube la imagen para los Miembros.",blank=True,null=True)
 
     creado_el = models.DateTimeField(auto_now_add=True, help_text="Fecha y hora de creación del especie.")
     actualizado_el = models.DateTimeField(auto_now=True, help_text="Fecha y hora de última modificación del especie.")
@@ -31,7 +32,7 @@ class SobreNosotros(models.Model):
     vision = models.TextField(help_text="Visión del refugio",blank=True,null=True)
     fecha_fundacion = models.DateField(help_text="Fecha de fundación del refugio", default="2015-01-01",blank=True,null=True)
     animales_rescatados = models.PositiveIntegerField(default=1000, help_text="Número de animales rescatados y reubicados", null=True, blank=True)
-    imagen = models.ImageField(upload_to='sobre_nosotros/', help_text="Imagen representativa del refugio.",blank=True,null=True)
+    imagen = CloudinaryField('image', help_text="Imagen representativa del refugio.",blank=True,null=True)
 
     creado_el = models.DateTimeField(auto_now_add=True, help_text="Fecha y hora de creación del especie.")
     actualizado_el = models.DateTimeField(auto_now=True, help_text="Fecha y hora de última modificación del especie.")
@@ -129,7 +130,7 @@ class Voluntario(models.Model):
         ],
         help_text="Disponibilidad del voluntario.")
     habilidades = models.TextField(help_text="Habilidades o experiencia del voluntario.")
-    imagen = models.ImageField(upload_to='voluntarios/', help_text="Imagen del voluntario.",blank=True,null=True)
+    imagen = CloudinaryField('image', help_text="Imagen del voluntario.",blank=True,null=True)
 
     creado_el = models.DateTimeField(auto_now_add=True, help_text="Fecha y hora de creación del especie.")
     actualizado_el = models.DateTimeField(auto_now=True, help_text="Fecha y hora de última modificación del especie.")
