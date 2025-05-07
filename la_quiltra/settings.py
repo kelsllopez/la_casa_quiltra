@@ -16,12 +16,17 @@ import environ
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import dj_database_url
+import pymysql
+pymysql.install_as_MySQLdb()
 
 env = environ.Env()
 if os.environ.get("READ_DOT_ENV_FILE") == "True":
     environ.Env.read_env()
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Cloudinary config
 cloudinary.config(
     cloud_name=env('CLOUDINARY_CLOUD_NAME'),
     api_key=env('CLOUDINARY_API_KEY'),
@@ -29,27 +34,9 @@ cloudinary.config(
     secure=True
 )
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY', default='dev-key')
 DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = ['.onrender.com', 'la-casa-quiltra.onrender.com']
-
-
-
-# settings.py
-
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
-
-# Application definition
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -68,12 +55,9 @@ INSTALLED_APPS = [
     'preguntas',
 ]
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,8 +86,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'la_quiltra.wsgi.application'
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 import pymysql
@@ -146,22 +129,18 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-# Ruta de los archivos estáticos
+# Static files
 STATIC_URL = '/static/'
-
-# Si estás en un entorno de producción, debes usar esta configuración
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -169,19 +148,22 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'kelsregla@gmail.com'
 EMAIL_HOST_PASSWORD = 'sfru osjs dean lifx'
 
+# Secure cookies in production
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
-
+if os.environ.get('RENDER'):
+    DEBUG = False
+    ALLOWED_HOSTS += ['la-casa-quiltra.onrender.com']
+    CSRF_TRUSTED_ORIGINS = ['https://la-casa-quiltra.onrender.com']
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-if os.environ.get('RENDER'):
-    DEBUG = False
-    ALLOWED_HOSTS += ['tu-app.onrender.com']
-    CSRF_TRUSTED_ORIGINS = ['https://tu-app.onrender.com', 'https://lacasaquiltra.com']
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+
 
 
 JAZZMIN_SETTINGS = {
