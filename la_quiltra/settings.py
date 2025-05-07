@@ -18,7 +18,9 @@ import cloudinary.uploader
 import cloudinary.api
 
 env = environ.Env()
-environ.Env.read_env()
+if os.environ.get("READ_DOT_ENV_FILE") == "True":
+    environ.Env.read_env()
+
 
 cloudinary.config(
     cloud_name=env('CLOUDINARY_CLOUD_NAME'),
